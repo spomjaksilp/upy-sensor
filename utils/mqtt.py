@@ -5,6 +5,7 @@ everything regarding the connection to the mqtt server.
 import time
 from umqtt.simple import MQTTClient
 import uasyncio as asyncio
+from uasyncio.synchro import Lock
 import json
 
 
@@ -16,27 +17,29 @@ class MQTTCommunicator:
         self.con = None
 
         # setup lock
-        self.com_lock = asyncio.Lock()
+        self.com_lock = Lock()
 
         asyncio.ensure_future(self.connect_mqtt())
 
     async def connect_mqtt(self):
-        async with self.com_lock:
-            # connect to wifi
-            await self.wifi_network
+        yield from self.com_lock.acquire()
+        # connect to wifi
+        await self.wifi_network
 
-            # now connect to mqtt server
-            self.con = MQTTClient(repr(time.time()), self.host)
-            con_reply = None
-            while con_reply is None:
-                try:
-                    con_reply = self.con.connect()
-                    await asyncio.sleep(1)
-                except OSError:
-                    print("failed to connect to mqtt")
-            print("connected to mqtt {}".format(self.host))
+        # now connect to mqtt server
+        self.con = MQTTClient(repr(time.time()), self.host)
+        con_reply = None
+        while con_reply is None:
+            try:
+                con_reply = self.con.connect()
+                await asyncio.sleep(1)
+            except OSError:
+                print("failed to connect to mqtt")
+        print("connected to mqtt {}".format(self.host))
+        self.com_lock.release()
 
     async def report(self, data: dict, topic: str) -> None:
-        async with self.com_lock:
-            payload = json.dumps(data)
-            self.con.publish(topic.encode(), payload.encode())
+        yield from self.com_lock.acquire()
+        payload = json.dumps(data)
+        self.con.publish(topic.encode(), payload.encode())
+        self.com_lock.release()
