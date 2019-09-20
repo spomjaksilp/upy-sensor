@@ -5,7 +5,6 @@ import uasyncio as asyncio
 
 # bare metal imports
 import machine
-import dht
 
 # local imports
 from utils import connect_wifi, MQTTCommunicator
