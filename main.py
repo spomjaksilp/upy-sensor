@@ -8,7 +8,7 @@ import machine
 
 # local imports
 from utils import connect_wifi, MQTTCommunicator
-from sensors import DHT11
+from sensors import sensor_class
 
 
 async def main():
@@ -24,8 +24,12 @@ async def main():
     mqtt = MQTTCommunicator(host=conf["mqtt"]["host"], wifi_network=wifi)
 
     # sensor
-    s = DHT11(pin=4, communicator=mqtt, topic="buro/env")
-    asyncio.ensure_future(s.run())
+    for sensor in conf["sensors"]:
+        if sensor["class"] not in sensor_class:
+            print("Sensor class %s not available"%(sensor["class"]))
+            continue
+        s = sensor_class[sensor["class"]](sensor, communicator=mqtt)
+        asyncio.ensure_future(s.run())
 
 
 if __name__ == "__main__":

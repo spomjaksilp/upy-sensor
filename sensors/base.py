@@ -7,14 +7,15 @@ import uasyncio as asyncio
 
 class Sensor:
     def __init__(self,
+                 config,
                  communicator,
-                 topic,
                  interval=30,
                  repeat=True):
+        self.config = config
         self.communicator = communicator
-        self.topic = topic
-        self.interval = interval
-        self.repeat = repeat
+        self.topic = config["topic"] if "topic" in config else config['name']
+        self.interval = config["interval"] if "interval" in config else interval
+        self.repeat = config["repeat"] if "repeat" in config else repeat
 
     async def report(self, data: dict):
         await self.communicator.report(data, self.topic)

@@ -7,14 +7,15 @@ from .statistics import mean
 
 
 class DHT11(Sensor):
-    def __init__(self, pin, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
         Use micropythons DHT implementation in the provided pin.
         :param pin:
         :param args:
         :param kwargs:
         """
-        self.dht = dht.DHT11(machine.Pin(pin))
+        assert "pin" in args[0], "Pin for DHT11 sensor not specified"
+        self.dht = dht.DHT11(machine.Pin(args[0]["pin"]))
         super().__init__(*args, **kwargs)
 
     async def measure(self):
