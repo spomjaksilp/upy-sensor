@@ -28,6 +28,7 @@ async def main():
         if sensor["class"] not in sensor_class:
             print("Sensor class %s not available"%(sensor["class"]))
             continue
+        print("Activate sensor %s (%s)"%(sensor['name'], sensor['class']))
         s = sensor_class[sensor["class"]](sensor, communicator=mqtt)
         asyncio.ensure_future(s.run())
 
