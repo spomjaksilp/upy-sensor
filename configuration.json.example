@@ -1,0 +1,41 @@
+{
+    "network": {
+        "ssid": "my_ssid",
+        "passphrase": "my_secret_password"
+    },
+    "mqtt": {
+        "host": "10.11.12.35"
+    },
+    "sensors":
+    [
+        {
+            "name": "cellar-temp",
+            "topic": "cellar/temperature",
+            "class": "DHT11_OneWire",
+            "pin": 4
+        },
+        {
+            "name": "cellar-ambient",
+            "topic": "cellar/ambient",
+            "class": "BME280_I2C",
+            "i2c": {
+                "bus": 0,
+                "pin_sda": 21,
+                "pin_scl": 22,
+                "device_id": 118
+                }
+        },
+        {
+            "name": "gasmeter",
+            "topic": "cellar/gasmeter",
+            "class": "QMC5883_I2C",
+            "i2c": {
+                "bus": 0,
+                "pin_sda": 21,
+                "pin_scl": 22,
+                "device_id": 13
+                },
+            "temperature_offset": 37.0
+        }
+    ]
+}
